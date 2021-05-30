@@ -17,16 +17,4 @@ public class FieldWithFloor extends Field{
     public int getFloor() {
         return 880;
     }
-
-    public int getRoof() {
-        return -1;
-    }
-
-    public int getLeftWall() {
-        return -1;
-    }
-
-    public int getRightWall() {
-        return -1;
-    }
 }

@@ -7,8 +7,6 @@ import java.util.Random;
 
 public class Particle {
     double x, y;
-    Color color = Color.WHITE;
-    int size = 2;
     Field field;
 
     public double getSpeed() {
@@ -32,11 +30,15 @@ public class Particle {
     }
 
     public Color getColor() {
-        return color;
+        return Color.WHITE;
     }
 
     public int getSize() {
-        return size;
+        return 2;
+    }
+
+    public int getMass() {
+        return 0;
     }
 
     @Override

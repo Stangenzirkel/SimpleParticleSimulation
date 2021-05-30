@@ -39,8 +39,18 @@ public class ActiveParticle extends Particle {
         this.speedY = speedY;
     }
 
+    public int accelerationX() {
+        return field.getAccelerationX(this);
+    }
+
+    public int accelerationY() {
+        return field.getAccelerationY(this);
+    }
+
     @Override
     public void move(int iterationsPerSecond) {
+        speedX += accelerationX() / iterationsPerSecond;
+        speedY += accelerationY() / iterationsPerSecond;
         x += speedX / iterationsPerSecond;
         y += speedY / iterationsPerSecond;
 
@@ -74,6 +84,21 @@ public class ActiveParticle extends Particle {
 
     @Override
     public Color getColor() {
-        return color;
+        if (Math.abs(getSpeed()) / 150 > 1) {
+            System.out.println(getSpeedX());
+            System.out.println(getSpeedY());
+            System.out.println(getSpeed());
+        }
+        return Color.rgb((int) (255 * Math.abs(getSpeed()) / 150), 0, 255 - (int) (255 * Math.abs(getSpeed()) / 150));
+    }
+
+    @Override
+    public int getMass() {
+        return 0;
+    }
+
+    @Override
+    public int getSize() {
+        return 4;
     }
 }

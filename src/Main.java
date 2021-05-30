@@ -27,7 +27,7 @@ public class Main extends Application {
     private int UPS = 30;
     private Timer timer;
 
-    private Field field = new BoxField();
+    private Field field = new BoxFieldWithGravity();
 
     public static void main(String[] args) {
         launch(args);

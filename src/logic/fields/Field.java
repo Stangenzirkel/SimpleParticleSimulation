@@ -50,4 +50,12 @@ public class Field {
     public int getRightWall() {
         return -1;
     }
+
+    public int getAccelerationX(Particle particle) {
+        return 0;
+    }
+
+    public int getAccelerationY(Particle particle) {
+        return 0;
+    }
 }
