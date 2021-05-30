@@ -4,23 +4,30 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import logic.Box;
+import logic.fields.*;
 import logic.particles.Particle;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class Main extends Application {
     private final int borderSize = 30;
     private final int textZoneWidth = 350;
     private int windowSizeX, windowSizeY;
-
     private Canvas canvas;
 
-    private Box box = new Box();
+    private int UPS = 30;
+    private Timer timer;
+
+    private Field field = new BoxField();
 
     public static void main(String[] args) {
         launch(args);
@@ -42,16 +49,40 @@ public class Main extends Application {
         canvas.setWidth(windowSizeX);
         canvas.setHeight(windowSizeY);
         canvas.setFocusTraversable(true);
+        canvas.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.SPACE) {
+            field.nextIteration();
+            drawField();
+            }
+        });
 
         root.getChildren().add(canvas);
         stage.setScene(scene);
         stage.show();
 
-        fillAll(Color.BLACK);
-        drawTextLine(new Particle(1, 1).toString(), 0);
+        drawTextLine(String.valueOf(field.getN()), 0);
         drawTextLine("txt", 1);
         drawTextLine("txt", 2);
-        drawBox();
+
+        field.addRandomParticles(100);
+        drawField();
+        update();
+    }
+
+    private void update() {
+        try {
+            timer.cancel();
+        } catch (Exception e) {}
+
+        field.nextIteration();
+        drawField();
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                update();
+            }
+        }, 1000 / UPS);
     }
 
     private void drawTextLine(String line, int num) {
@@ -71,17 +102,15 @@ public class Main extends Application {
         gc.fillRect(0, 0, windowSizeX, windowSizeY);
     }
 
-    private void drawBox() {
+    private void drawField() {
+        fillAll(Color.BLACK);
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        for (Particle particle: box.getParticles()) {
+        for (Particle particle: field.getParticles()) {
             gc.setFill(particle.getColor());
             gc.fillRect(particle.getX() - particle.getSize() / 2,
                         particle.getY() - particle.getSize() / 2,
                             particle.getSize(),
                             particle.getSize());
-
-            System.out.println(particle.getX());
-            System.out.println(particle.getY());
         }
     }
 }
