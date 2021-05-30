@@ -15,6 +15,7 @@ public class Field {
     }
 
     public void addRandomParticles(int n) {
+        particles = new Particle[n];
         for (int i = 0; i < n; i++) {
             particles[i] = ActiveParticle.randomPosParticle(780, 800, this);
         }

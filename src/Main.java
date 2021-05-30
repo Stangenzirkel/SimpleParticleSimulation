@@ -64,7 +64,7 @@ public class Main extends Application {
         drawTextLine("txt", 1);
         drawTextLine("txt", 2);
 
-        field.addRandomParticles(100);
+        field.addRandomParticles(1000);
         drawField();
         update();
     }
