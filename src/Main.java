@@ -4,22 +4,23 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import logic.Box;
+import logic.particles.Particle;
 
 
 public class Main extends Application {
     private final int borderSize = 30;
     private final int textZoneWidth = 350;
-
     private int windowSizeX, windowSizeY;
 
     private Canvas canvas;
+
+    private Box box = new Box();
 
     public static void main(String[] args) {
         launch(args);
@@ -47,9 +48,10 @@ public class Main extends Application {
         stage.show();
 
         fillAll(Color.BLACK);
-        drawTextLine("txt", 0);
+        drawTextLine(new Particle(1, 1).toString(), 0);
         drawTextLine("txt", 1);
         drawTextLine("txt", 2);
+        drawBox();
     }
 
     private void drawTextLine(String line, int num) {
@@ -67,5 +69,19 @@ public class Main extends Application {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(color);
         gc.fillRect(0, 0, windowSizeX, windowSizeY);
+    }
+
+    private void drawBox() {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        for (Particle particle: box.getParticles()) {
+            gc.setFill(particle.getColor());
+            gc.fillRect(particle.getX() - particle.getSize() / 2,
+                        particle.getY() - particle.getSize() / 2,
+                            particle.getSize(),
+                            particle.getSize());
+
+            System.out.println(particle.getX());
+            System.out.println(particle.getY());
+        }
     }
 }
