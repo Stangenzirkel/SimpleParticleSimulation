@@ -55,8 +55,8 @@ public class Particle {
         this.field = field;
     }
 
-    public static Particle randomPosParticle(int maxX, int maxY, Field field) {
-        return new Particle(new Random().nextInt(maxX), new Random().nextInt(maxY), field);
+    public static Particle randomPosParticle(int minX, int minY, int maxX, int maxY, Field field) {
+        return new Particle(minX + new Random().nextInt(maxX - minX), minY + new Random().nextInt(maxY - minY), field);
     }
 
     public double getDistance (Particle particle) {

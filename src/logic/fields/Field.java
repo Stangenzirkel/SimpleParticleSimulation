@@ -17,7 +17,7 @@ public class Field {
     public void addRandomParticles(int n, int maxSpeed) {
         particles = new Particle[n];
         for (int i = 0; i < n; i++) {
-            particles[i] = ActiveParticle.randomPosParticle(20, 20, this, maxSpeed);
+            particles[i] = ActiveParticle.randomPosParticle(300, 300, 305, 305, this, maxSpeed);
         }
     }
 

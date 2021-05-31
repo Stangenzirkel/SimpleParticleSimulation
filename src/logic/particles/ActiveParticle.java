@@ -77,8 +77,8 @@ public class ActiveParticle extends Particle {
         }
     }
 
-    public static Particle randomPosParticle(int maxX, int maxY, Field field, int maxSpeed) {
-        ActiveParticle activeParticle = new ActiveParticle(new Random().nextInt(maxX), new Random().nextInt(maxY), field);
+    public static Particle randomPosParticle(int minX, int minY, int maxX, int maxY, Field field, int maxSpeed) {
+        ActiveParticle activeParticle = new ActiveParticle(minX + new Random().nextInt(maxX - minX), minY + new Random().nextInt(maxY - minY), field);
         double direction = new Random().nextDouble() * Math.PI * 2;
         double speed = maxSpeed - new Random().nextDouble() * 2 * maxSpeed;
         activeParticle.setSpeedX(Math.cos(direction) * speed);
