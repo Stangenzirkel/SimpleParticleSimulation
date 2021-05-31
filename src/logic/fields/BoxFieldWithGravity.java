@@ -7,6 +7,10 @@ import logic.particles.Particle;
  * Date: 31/05/2021 01:10
  */
 public class BoxFieldWithGravity extends BoxField{
+    public BoxFieldWithGravity(int width, int height) {
+        super(width, height);
+    }
+
     public int getAccelerationX(Particle particle) {
         return 0;
     }

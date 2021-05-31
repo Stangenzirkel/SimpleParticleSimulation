@@ -1,23 +1,28 @@
 package logic.fields;
 
-public class BoxField extends Field{
-    public BoxField() {
+public class  BoxField extends Field{
+    int width;
+    int height;
+
+    public BoxField(int width, int height) {
         super();
+        this.width = width;
+        this.height = height;
     }
 
     public int getFloor() {
-        return 880;
+        return height;
     }
 
     public int getRoof() {
-        return 20;
+        return 0;
     }
 
     public int getLeftWall() {
-        return 20;
+        return 0;
     }
 
     public int getRightWall() {
-        return 880;
+        return width;
     }
 }

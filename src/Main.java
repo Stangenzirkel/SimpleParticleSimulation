@@ -19,15 +19,14 @@ import java.util.TimerTask;
 
 
 public class Main extends Application {
-    private final int borderSize = 30;
-    private final int textZoneWidth = 350;
     private int windowSizeX, windowSizeY;
     private Canvas canvas;
 
     private int UPS = 30;
     private Timer timer;
 
-    private Field field = new BoxFieldWithGravity();
+    private Field field;
+    private int maxSpeed = 30;
 
     public static void main(String[] args) {
         launch(args);
@@ -60,11 +59,8 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.show();
 
-        drawTextLine(String.valueOf(field.getN()), 0);
-        drawTextLine("txt", 1);
-        drawTextLine("txt", 2);
-
-        field.addRandomParticles(1000);
+        field = new BoxField(windowSizeX, windowSizeY);
+        field.addRandomParticles(10000, maxSpeed);
         drawField();
         update();
     }
@@ -72,7 +68,9 @@ public class Main extends Application {
     private void update() {
         try {
             timer.cancel();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            System.out.println(e);
+        }
 
         field.nextIteration();
         drawField();
@@ -85,19 +83,9 @@ public class Main extends Application {
         }, 1000 / UPS);
     }
 
-    private void drawTextLine(String line, int num) {
-        int TEXTSIZE = 50, TEXTINDENT = 0;
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.loadFont("file:./static/19187.ttf", TEXTSIZE));
-        gc.setTextAlign(TextAlignment.LEFT);
-        gc.setTextBaseline(VPos.TOP);
-        gc.fillText(line, windowSizeX - textZoneWidth,
-                borderSize + num * (TEXTSIZE + TEXTINDENT));
-    }
-
         public void fillAll(Color color) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, windowSizeX, windowSizeY);
         gc.setFill(color);
         gc.fillRect(0, 0, windowSizeX, windowSizeY);
     }
@@ -106,11 +94,21 @@ public class Main extends Application {
         fillAll(Color.BLACK);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         for (Particle particle: field.getParticles()) {
-            gc.setFill(particle.getColor());
+            gc.setFill(getColorOfParticle(particle, 2));
             gc.fillRect(particle.getX() - particle.getSize() / 2,
                         particle.getY() - particle.getSize() / 2,
                             particle.getSize(),
                             particle.getSize());
         }
+    }
+
+    private Color getColorOfParticle(Particle particle, int mod) {
+        if (mod == 1) {
+            return particle.getColor();
+        } else if (mod == 2) {
+            return Color.hsb(300 - particle.getSpeed() / maxSpeed * 300, 1, 0.5 + particle.getSpeed() / maxSpeed / 2);
+        }
+
+        return Color.WHITE;
     }
 }

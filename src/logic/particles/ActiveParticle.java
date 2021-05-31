@@ -39,12 +39,14 @@ public class ActiveParticle extends Particle {
         this.speedY = speedY;
     }
 
-    public int accelerationX() {
-        return field.getAccelerationX(this);
+    public double accelerationX() {
+        double acceleration = field.getAccelerationX(this);
+        return acceleration;
     }
 
-    public int accelerationY() {
-        return field.getAccelerationY(this);
+    public double accelerationY() {
+        double acceleration = field.getAccelerationY(this);
+        return acceleration;
     }
 
     @Override
@@ -75,21 +77,18 @@ public class ActiveParticle extends Particle {
         }
     }
 
-    public static Particle randomPosParticle(int maxX, int maxY, Field field) {
+    public static Particle randomPosParticle(int maxX, int maxY, Field field, int maxSpeed) {
         ActiveParticle activeParticle = new ActiveParticle(new Random().nextInt(maxX), new Random().nextInt(maxY), field);
-        activeParticle.setSpeedX(20 - new Random().nextInt(40));
-        activeParticle.setSpeedY(20 - new Random().nextInt(40));
+        double direction = new Random().nextDouble() * Math.PI * 2;
+        double speed = maxSpeed - new Random().nextDouble() * 2 * maxSpeed;
+        activeParticle.setSpeedX(Math.cos(direction) * speed);
+        activeParticle.setSpeedY(Math.sin(direction) * speed);
         return activeParticle;
     }
 
     @Override
     public Color getColor() {
-        if (Math.abs(getSpeed()) / 150 > 1) {
-            System.out.println(getSpeedX());
-            System.out.println(getSpeedY());
-            System.out.println(getSpeed());
-        }
-        return Color.rgb((int) (255 * Math.abs(getSpeed()) / 150), 0, 255 - (int) (255 * Math.abs(getSpeed()) / 150));
+        return Color.RED;
     }
 
     @Override

@@ -14,10 +14,10 @@ public class Field {
         return particles;
     }
 
-    public void addRandomParticles(int n) {
+    public void addRandomParticles(int n, int maxSpeed) {
         particles = new Particle[n];
         for (int i = 0; i < n; i++) {
-            particles[i] = ActiveParticle.randomPosParticle(780, 800, this);
+            particles[i] = ActiveParticle.randomPosParticle(20, 20, this, maxSpeed);
         }
     }
 
