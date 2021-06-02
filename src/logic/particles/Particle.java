@@ -1,32 +1,33 @@
 package logic.particles;
 
 import javafx.scene.paint.Color;
+import logic.DoubleVector;
+import logic.PointCoordinates;
 import logic.fields.Field;
 
-import java.util.Random;
-
 public class Particle {
-    double x, y;
+    PointCoordinates coordinates;
+    PointCoordinates target;
     Field field;
 
-    public double getSpeed() {
-        return 0;
+    public DoubleVector getSpeed() {
+        return DoubleVector.getNullVector();
     }
 
-    public double getSpeedX() {
-        return 0;
+    public PointCoordinates getCoordinates() {
+        return coordinates;
     }
 
-    public double getSpeedY() {
-        return 0;
+    public PointCoordinates getTarget() {
+        return target;
     }
 
     public double getX() {
-        return x;
+        return coordinates.getX();
     }
 
     public double getY() {
-        return y;
+        return coordinates.getY();
     }
 
     public Color getColor() {
@@ -44,25 +45,29 @@ public class Particle {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "{" +
-                "x=" + x +
-                ", y=" + y +
+                "x=" + coordinates.getX() +
+                ", y=" + coordinates.getY() +
+                ", speed=" + getSpeed() +
                 '}';
     }
 
-    public Particle(double x, double y, Field field) {
-        this.x = x;
-        this.y = y;
+    public Particle(PointCoordinates coordinates, Field field) {
+        this.coordinates = coordinates;
         this.field = field;
     }
 
     public static Particle randomPosParticle(int minX, int minY, int maxX, int maxY, Field field) {
-        return new Particle(minX + new Random().nextInt(maxX - minX), minY + new Random().nextInt(maxY - minY), field);
+        return new Particle(PointCoordinates.getRandom(minX, minY, maxX, maxY), field);
     }
 
     public double getDistance (Particle particle) {
-        return Math.sqrt(Math.abs(getX() - particle.getX()) * Math.abs(getX() - particle.getX())
-                + Math.abs(getY() - particle.getY()) * Math.abs(getY() - particle.getY()));
+        return coordinates.getVector(particle.getCoordinates()).getValue();
     }
 
-    public void move(int iterationsPerSecond) {}
+    public void move() {}
+
+    public void setTarget() {
+    }
+
+    public void setSpeed(DoubleVector speed) {}
 }

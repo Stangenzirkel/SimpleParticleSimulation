@@ -1,103 +1,83 @@
 package logic.particles;
 
+import logic.DoubleVector;
+import logic.PointCoordinates;
 import logic.fields.Field;
 import javafx.scene.paint.Color;
 import java.util.Random;
 
 public class ActiveParticle extends Particle {
-    double speedX = 0, speedY = 0;
+    DoubleVector speed = DoubleVector.getNullVector();
     Color color = Color.RED;
 
-    public ActiveParticle(double x, double y, Field field) {
-        super(x, y, field);
-    }
-
-    public double getDirection() {
-        return Math.atan(speedY / speedX);
+    public ActiveParticle(PointCoordinates coordinates, Field field) {
+        super(coordinates, field);
+        target = coordinates;
     }
 
     @Override
-    public double getSpeed() {
-        return Math.sqrt(speedX * speedX + speedY * speedY);
+    public DoubleVector getSpeed() {
+        return speed;
     }
 
     @Override
-    public double getSpeedX() {
-        return speedX;
+    public void setSpeed(DoubleVector speed) {
+        this.speed = speed;
     }
 
-    @Override
-    public double getSpeedY() {
-        return speedY;
-    }
-
-    public void setSpeedX(double speedX) {
-        this.speedX = speedX;
-    }
-
-    public void setSpeedY(double speedY) {
-        this.speedY = speedY;
-    }
-
-    public double accelerationX() {
-        double acceleration = field.getAccelerationX(this);
-        return acceleration;
-    }
-
-    public double accelerationY() {
-        double acceleration = field.getAccelerationY(this);
+    public DoubleVector acceleration() {
+        DoubleVector acceleration = field.getAcceleration(this);
         return acceleration;
     }
 
     @Override
-    public void move(int iterationsPerSecond) {
-        speedX += accelerationX() / iterationsPerSecond;
-        speedY += accelerationY() / iterationsPerSecond;
-        x += speedX / iterationsPerSecond;
-        y += speedY / iterationsPerSecond;
+    public void setTarget() {
+        speed.add(acceleration());
+        target.add(speed);
+    }
 
-        if (x <= field.getLeftWall()) {
-            x = field.getLeftWall();
-            speedX = -speedX;
+    @Override
+    public void move() {
+        coordinates = target;
+        if (coordinates.getX() <= field.getLeftWall()) {
+            coordinates.setX(field.getLeftWall() + 1);
+            speed.setX(Math.abs(speed.getX()));
         }
 
-        if (x >= field.getRightWall()) {
-            x = field.getRightWall();
-            speedX = -speedX;
+        if (coordinates.getX() >= field.getRightWall()) {
+            coordinates.setX(field.getRightWall() - 1);
+            speed.setX(-Math.abs(speed.getX()));
         }
 
-        if (y <= field.getRoof()) {
-            y = field.getRoof();
-            speedY = -speedY;
+        if (coordinates.getY() <= field.getRoof()) {
+            coordinates.setY(field.getRoof() + 1);
+            speed.setY(Math.abs(speed.getY()));
         }
 
-        if (y >= field.getFloor()) {
-            y = field.getFloor();
-            speedY = -speedY;
+        if (coordinates.getY() >= field.getFloor()) {
+            coordinates.setY(field.getFloor() - 1);
+            speed.setY(-Math.abs(speed.getY()));
         }
     }
 
     public static Particle randomPosParticle(int minX, int minY, int maxX, int maxY, Field field, int maxSpeed) {
-        ActiveParticle activeParticle = new ActiveParticle(minX + new Random().nextInt(maxX - minX), minY + new Random().nextInt(maxY - minY), field);
-        double direction = new Random().nextDouble() * Math.PI * 2;
-        double speed = maxSpeed - new Random().nextDouble() * 2 * maxSpeed;
-        activeParticle.setSpeedX(Math.cos(direction) * speed);
-        activeParticle.setSpeedY(Math.sin(direction) * speed);
+        ActiveParticle activeParticle = new ActiveParticle(PointCoordinates.getRandom(minX, minY, maxX, maxY), field);
+        activeParticle.setSpeed(DoubleVector.getRandom(maxSpeed));
         return activeParticle;
     }
 
     @Override
     public Color getColor() {
-        return Color.RED;
+        return Color.WHITE;
     }
 
     @Override
     public int getMass() {
-        return 0;
+        return 5;
     }
 
     @Override
     public int getSize() {
-        return 4;
+        return 2;
     }
 }

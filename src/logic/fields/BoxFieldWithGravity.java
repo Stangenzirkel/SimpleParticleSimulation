@@ -1,5 +1,6 @@
 package logic.fields;
 
+import logic.DoubleVector;
 import logic.particles.Particle;
 
 /**
@@ -11,11 +12,7 @@ public class BoxFieldWithGravity extends BoxField{
         super(width, height);
     }
 
-    public int getAccelerationX(Particle particle) {
-        return 0;
-    }
-
-    public int getAccelerationY(Particle particle) {
-        return 10;
+    public DoubleVector getAcceleration(Particle particle) {
+        return new DoubleVector(0, 0.1);
     }
 }

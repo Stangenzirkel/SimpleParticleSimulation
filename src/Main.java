@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -8,6 +9,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import logic.PointCoordinates;
+import logic.cellmaps.CellMap;
 import logic.fields.*;
 import logic.particles.Particle;
 
@@ -19,11 +22,10 @@ public class Main extends Application {
     private int windowSizeX, windowSizeY;
     private Canvas canvas;
 
-    private int UPS = 30;
+    private final int UPS = 30;
     private Timer timer;
 
     private Field field;
-    private int maxSpeed = 30;
     private int drawMode = 1;
 
     public static void main(String[] args) {
@@ -70,13 +72,13 @@ public class Main extends Application {
         stage.show();
 
         field = new BoxField(windowSizeX, windowSizeY);
-        field.addRandomParticles(10000, maxSpeed);
-        // update();
+        field.addRandomParticles(100000, 0, 0, 30, 30, 5);
+        update();
 
-        for (int i = 0; i < 1000; i++) {
-            field.nextIteration();
-        }
-        drawAll();
+//        for (int i = 0; i < 1000; i++) {
+//            field.nextIteration();
+//        }
+//        drawAll();
     }
 
     private void update() {
@@ -95,20 +97,21 @@ public class Main extends Application {
                 update();
             }
         }, 1000 / UPS);
+        // System.out.println(field.getMeanSpeed());
     }
 
-        public void fillAll(Color color) {
+        public void clearAll(Color color) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, windowSizeX, windowSizeY);
         gc.setFill(color);
         gc.fillRect(0, 0, windowSizeX, windowSizeY);
     }
 
-    private void drawParticles(int mod) {
-        fillAll(Color.BLACK);
+    private void drawParticlesFromType() {
+        clearAll(Color.BLACK);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         for (Particle particle: field.getParticles()) {
-            gc.setFill(getColorOfParticle(particle, mod));
+            gc.setFill(getColorOfParticle(particle, 1));
             gc.fillRect(particle.getX() - particle.getSize() / 2,
                         particle.getY() - particle.getSize() / 2,
                             particle.getSize(),
@@ -116,107 +119,15 @@ public class Main extends Application {
         }
     }
 
-    private void drawAll() {
-        if (drawMode == 1) {
-            drawParticles(1);
-        } else if (drawMode == 2){
-            drawParticles(2);
-        } else if (drawMode == 3) {
-            drawTemperatureMap(32, 18);
-        } else if (drawMode == 4) {
-            drawPressureMap(32, 18);
-        }
-    }
-
-    private void drawTemperatureMap(int resolutionX, int resolutionY) {
-        assert field instanceof BoxField;
-
-        fillAll(Color.BLACK);
+    private void drawParticlesFromSpeed() {
+        clearAll(Color.BLACK);
         GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        double [][] temperatureMap = new double[resolutionY][resolutionX];
-        for (int y = 0; y < resolutionY; y++) {
-            for (int x = 0; x < resolutionX; x++) {
-                temperatureMap[y][x] = 0;
-            }
-        }
-
-        double [][] pressureMap = new double[resolutionY][resolutionX];
-        for (int y = 0; y < resolutionY; y++) {
-            for (int x = 0; x < resolutionX; x++) {
-                pressureMap[y][x] = 0;
-            }
-        }
-
-        double maxSpeed = 0, minSpeed = Double.MAX_VALUE;
-
         for (Particle particle: field.getParticles()) {
-            if (particle.getSpeed() > maxSpeed) {
-                maxSpeed = particle.getSpeed();
-            }
-
-            if (particle.getSpeed() < minSpeed) {
-                minSpeed = particle.getSpeed();
-            }
-
-            // - 1 это костыль для частиц на границе
-            int x = (int) (resolutionX * ((particle.getX() - 1) / field.getRightWall()));
-            int y = (int) (resolutionY * ((particle.getY() - 1) / field.getFloor()));
-
-            try {
-                pressureMap[y][x]++;
-                temperatureMap[y][x] = (temperatureMap[y][x] * (pressureMap[y][x] - 1) + particle.getSpeed()) / pressureMap[y][x];
-            } catch (Exception e) {
-                System.out.println(particle.getX());
-                System.out.println(particle.getY());
-            }
-        }
-
-        for (int y = 0; y < resolutionY; y++) {
-            for (int x = 0; x < resolutionX; x++) {
-                if (pressureMap[y][x] != 0) {
-                    gc.setFill(Color.hsb(300 - temperatureMap[y][x] / maxSpeed * 300, 1, 1));
-                    gc.fillRect(x * windowSizeX / resolutionX, y * windowSizeY / resolutionY, windowSizeX / resolutionX,
-                            windowSizeY / resolutionY);
-                }
-            }
-        }
-    }
-
-    private void drawPressureMap(int resolutionX, int resolutionY) {
-        assert field instanceof BoxField;
-
-        fillAll(Color.BLACK);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        double [][] pressureMap = new double[resolutionY][resolutionX];
-        for (int y = 0; y < resolutionY; y++) {
-            for (int x = 0; x < resolutionX; x++) {
-                pressureMap[y][x] = 0;
-            }
-        }
-
-        for (Particle particle: field.getParticles()) {
-            // - 1 это костыль для частиц на границе
-            int x = (int) (resolutionX * ((particle.getX() - 1) / field.getRightWall()));
-            int y = (int) (resolutionY * ((particle.getY() - 1) / field.getFloor()));
-
-            try {
-                pressureMap[y][x]++;
-            } catch (Exception e) {
-                System.out.println(particle.getX());
-                System.out.println(particle.getY());
-            }
-        }
-
-        for (int y = 0; y < resolutionY; y++) {
-            for (int x = 0; x < resolutionX; x++) {
-                if (pressureMap[y][x] != 0) {
-                    gc.setFill(Color.hsb(0, 0, pressureMap[y][x] / field.getN()));
-                    gc.fillRect(x * windowSizeX / resolutionX, y * windowSizeY / resolutionY, windowSizeX / resolutionX,
-                            windowSizeY / resolutionY);
-                }
-            }
+            gc.setFill(getColorOfParticle(particle, 2));
+            gc.fillRect(particle.getX() - particle.getSize() / 2,
+                    particle.getY() - particle.getSize() / 2,
+                    particle.getSize(),
+                    particle.getSize());
         }
     }
 
@@ -224,9 +135,64 @@ public class Main extends Application {
         if (mod == 1) {
             return particle.getColor();
         } else if (mod == 2) {
-            return Color.hsb(300 - particle.getSpeed() / maxSpeed * 300, 1, 0.5 + particle.getSpeed() / maxSpeed / 2);
+            return Color.hsb(300 - (particle.getSpeed().getValue() - field.getMinSpeed()) / (field.getMaxSpeed() - field.getMinSpeed()) * 300, 1, 1);
         }
 
         return Color.WHITE;
+    }
+
+    private void drawTemperatureMap(int resolutionX, int resolutionY) {
+        clearAll(Color.BLACK);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        CellMap map = field.getTemperatureMap(PointCoordinates.getNullPointCoordinates(),
+                new PointCoordinates(windowSizeX, windowSizeY),
+                resolutionX, resolutionY);
+
+        map.setEMPTYReplacer(999);
+
+        for (int y = 0; y < resolutionY; y++) {
+            for (int x = 0; x < resolutionX; x++) {
+                if (!map.isEmpty(x, y)) {
+                    gc.setFill(Color.hsb(300 - (map.getValue(x, y) - map.getMin())/ (map.getMax() - map.getMin()) * 300, 1, 1));
+                    gc.fillRect(x * windowSizeX / resolutionX, y * windowSizeY / resolutionY, windowSizeX / resolutionX,
+                            windowSizeY / resolutionY);
+                }
+            }
+        }
+        // map.SOUT();
+    }
+
+    private void drawPressureMap(int resolutionX, int resolutionY) {
+        clearAll(Color.BLACK);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        CellMap map = field.getPressureMap(PointCoordinates.getNullPointCoordinates(),
+                new PointCoordinates(windowSizeX, windowSizeY),
+                resolutionX, resolutionY);
+
+        for (int y = 0; y < resolutionY; y++) {
+            for (int x = 0; x < resolutionX; x++) {
+                if (!map.isEmpty(x, y)) {
+                    gc.setFill(Color.hsb(0, 0, map.getValue(x, y) / map.getMax()));
+                    gc.fillRect(x * windowSizeX / resolutionX, y * windowSizeY / resolutionY, windowSizeX / resolutionX,
+                            windowSizeY / resolutionY);
+                }
+            }
+        }
+    }
+
+    private void drawAll() {
+        Platform.runLater(()->{
+            if (drawMode == 1) {
+                drawParticlesFromType();
+            } else if (drawMode == 2){
+                drawParticlesFromSpeed();
+            } else if (drawMode == 3) {
+                drawTemperatureMap(16, 9);
+            } else if (drawMode == 4) {
+                drawPressureMap(16, 9);
+            }
+        });
     }
 }
