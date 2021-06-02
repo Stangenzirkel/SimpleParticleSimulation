@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.function.BiFunction;
 
 public class Field {
-    Particle[] particles = new Particle [100];
+    Particle[] particles = new Particle [0];
     int width, height;
     int iteration = 0;
     double maxSpeed = 0, minSpeed = Double.MAX_VALUE;
@@ -27,8 +27,10 @@ public class Field {
     }
 
     public void addRandomParticles(int n, int minX, int minY, int maxX, int maxY, int maxSpeed) {
-        particles = new Particle[n];
-        for (int i = 0; i < n; i++) {
+        int oldLen = particles.length;
+        int newLen = particles.length + n;
+        particles = Arrays.copyOf(particles, newLen);
+        for (int i = oldLen; i < newLen; i++) {
             particles[i] = ActiveParticle.randomPosParticle(minX, minY, maxX, maxY, this, maxSpeed);
         }
     }
@@ -137,7 +139,6 @@ public class Field {
                     System.out.println(particle.getY());
                     System.out.println();
                 }
-
             }
         }
 

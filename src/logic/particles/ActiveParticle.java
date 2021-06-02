@@ -78,6 +78,6 @@ public class ActiveParticle extends Particle {
 
     @Override
     public int getSize() {
-        return 2;
+        return 8;
     }
 }

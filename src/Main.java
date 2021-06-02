@@ -22,8 +22,10 @@ public class Main extends Application {
     private int windowSizeX, windowSizeY;
     private Canvas canvas;
 
-    private final int UPS = 30;
-    private Timer timer;
+    private final int FPS = 30;
+    private final int UPS = 150;
+    private Timer UPSTimer;
+    private Timer FPSTimer;
 
     private Field field;
     private int drawMode = 1;
@@ -72,30 +74,50 @@ public class Main extends Application {
         stage.show();
 
         field = new Field(windowSizeX, windowSizeY);
-        field.addRandomParticles(100000, 0, 0, 30, 30, 5);
-        update();
+        field.addRandomParticles(10, 0, 0, 30, 30, 1);
+        updateWithTimer();
+        drawWithTimer();
     }
 
-    private void update() {
+    private void updateWithTimer() {
         try {
-            timer.cancel();
+            UPSTimer.cancel();
         } catch (Exception e) {
             System.out.println(e);
         }
 
         field.nextIteration();
-        drawAll();
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
+        UPSTimer = new Timer();
+        UPSTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                update();
+                updateWithTimer();
             }
         }, 1000 / UPS);
         // System.out.println(field.getMeanSpeed());
     }
 
+    private void drawWithTimer() {
+        try {
+            FPSTimer.cancel();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        
+        drawAll();
+        FPSTimer = new Timer();
+        FPSTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                drawWithTimer();
+            }
+        }, 1000 / FPS);
+        // System.out.println(field.getMeanSpeed());
+    }
+
+
     private void drawAll() {
+        clearAll(Color.BLACK);
         Platform.runLater(()->{
             if (drawMode == 1) {
                 drawParticlesFromType();
@@ -125,7 +147,6 @@ public class Main extends Application {
     }
 
     private void drawParticlesFromType() {
-        clearAll(Color.BLACK);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         for (Particle particle: field.getParticles()) {
             gc.setFill(getColorOfParticle(particle, 1));
@@ -137,7 +158,6 @@ public class Main extends Application {
     }
 
     private void drawParticlesFromSpeed() {
-        clearAll(Color.BLACK);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         for (Particle particle: field.getParticles()) {
             gc.setFill(getColorOfParticle(particle, 2));
@@ -159,7 +179,6 @@ public class Main extends Application {
     }
 
     private void drawTemperatureMap(int resolutionX, int resolutionY) {
-        clearAll(Color.BLACK);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         CellMap map = field.getTemperatureMap(PointCoordinates.getNullPointCoordinates(),
@@ -181,7 +200,6 @@ public class Main extends Application {
     }
 
     private void drawPressureMap(int resolutionX, int resolutionY) {
-        clearAll(Color.BLACK);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         CellMap map = field.getPressureMap(PointCoordinates.getNullPointCoordinates(),
