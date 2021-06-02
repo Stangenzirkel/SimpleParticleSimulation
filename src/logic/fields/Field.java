@@ -13,10 +13,13 @@ import java.util.function.BiFunction;
 
 public class Field {
     Particle[] particles = new Particle [100];
+    int width, height;
     int iteration = 0;
     double maxSpeed = 0, minSpeed = Double.MAX_VALUE;
 
-    public Field() {
+    public Field(int width, int height) {
+        this.width = width;
+        this.height = height;
     }
 
     public Particle[] getParticles() {
@@ -69,19 +72,19 @@ public class Field {
     }
 
     public int getFloor() {
-        return -1;
+        return height;
     }
 
     public int getRoof() {
-        return -1;
+        return 0;
     }
 
     public int getLeftWall() {
-        return -1;
+        return 0;
     }
 
     public int getRightWall() {
-        return -1;
+        return width;
     }
 
     public DoubleVector getAcceleration(Particle particle) {

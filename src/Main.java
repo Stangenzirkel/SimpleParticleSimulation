@@ -71,14 +71,9 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.show();
 
-        field = new BoxField(windowSizeX, windowSizeY);
+        field = new Field(windowSizeX, windowSizeY);
         field.addRandomParticles(100000, 0, 0, 30, 30, 5);
         update();
-
-//        for (int i = 0; i < 1000; i++) {
-//            field.nextIteration();
-//        }
-//        drawAll();
     }
 
     private void update() {
@@ -100,7 +95,29 @@ public class Main extends Application {
         // System.out.println(field.getMeanSpeed());
     }
 
-        public void clearAll(Color color) {
+    private void drawAll() {
+        Platform.runLater(()->{
+            if (drawMode == 1) {
+                drawParticlesFromType();
+            } else if (drawMode == 2){
+                drawParticlesFromSpeed();
+            } else if (drawMode == 3) {
+                drawTemperatureMap(16, 9);
+            } else if (drawMode == 4) {
+                drawPressureMap(16, 9);
+            }
+        });
+    }
+
+    private void drawIteration() {
+        for (int i = 0; i < 1000; i++) {
+            field.nextIteration();
+        }
+        drawAll();
+    }
+
+    
+    public void clearAll(Color color) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, windowSizeX, windowSizeY);
         gc.setFill(color);
@@ -180,19 +197,5 @@ public class Main extends Application {
                 }
             }
         }
-    }
-
-    private void drawAll() {
-        Platform.runLater(()->{
-            if (drawMode == 1) {
-                drawParticlesFromType();
-            } else if (drawMode == 2){
-                drawParticlesFromSpeed();
-            } else if (drawMode == 3) {
-                drawTemperatureMap(16, 9);
-            } else if (drawMode == 4) {
-                drawPressureMap(16, 9);
-            }
-        });
     }
 }
